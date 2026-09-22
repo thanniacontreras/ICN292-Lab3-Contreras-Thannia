@@ -1,0 +1,60 @@
+{
+  "name": "Emisor_solicitudes",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1d8eb4bb-d077-4c76-9bbe-f0d09070051e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://thanniacontreras.app.n8n.cloud/webhook-test/devoluciones\n",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"id_solicitud\": \"DEV-SKU01\",\n  \"sku\": \"ZZ-999\",\n  \"unidades\": \"1\",\n  \"monto\": \"19990\",\n  \"dias_desde_compra\": \"3\",\n  \"estado_producto\": \"sin_abrir\",\n  \"email_cliente\": \"prueba@example.cl\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "11c5cad6-8d65-4180-ba25-d2053f66bda1",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e76a82d2-2bf7-471d-bc0b-866991157289",
+  "meta": {
+    "instanceId": "65161f3602f8fb48100059aaf5a01503a889158d67103a4586db03d4905dbcd7"
+  },
+  "nodeGroups": [],
+  "id": "Mscrnbd9W58pVbWA",
+  "tags": []
+}

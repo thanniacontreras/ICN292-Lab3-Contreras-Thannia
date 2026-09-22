@@ -1,0 +1,426 @@
+{
+  "name": "Resumen_diario_devoluciones",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 23,
+              "triggerAtMinute": 55
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "eb405d11-2f2f-4119-8fc1-082e4424e861",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "0M31EqbRTcdFF1QG",
+          "mode": "list",
+          "cachedResultName": "registro_devoluciones",
+          "cachedResultUrl": "/projects/qrr8amgbpLOSDVYA/datatables/0M31EqbRTcdFF1QG"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "fecha_hora",
+              "condition": "gte",
+              "keyValue": "={{ $now.startOf('day').toISO() }}"
+            },
+            {
+              "keyName": "fecha_hora",
+              "condition": "lt",
+              "keyValue": "={{ $now.plus({ days: 1 }).startOf('day').toISO() }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "891918d0-b205-4544-8a1a-a93d91c9dfdc",
+      "name": "Leer_solicitudes_de_hoy",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a970a426-ad23-4e0f-b96e-edb3845a2f9e",
+              "leftValue": "={{ $json.id_solicitud }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "cb2e509a-26f7-4c63-9af7-95cf299a993d",
+      "name": "If_hay_solicitudes?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4dcd5d03-15ee-428a-8d97-37e29b5a67ab",
+              "name": "es_aprobacion",
+              "value": "={{ $json.ruta === 'APROBACION' ? 1 : 0 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "185ac5d2-557e-475d-b564-f69dd69258ca",
+      "name": "Edit Fields_Preparar_resumen"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "id_solicitud"
+            },
+            {
+              "aggregation": "sum",
+              "field": "monto"
+            },
+            {
+              "aggregation": "sum",
+              "field": "es_aprobacion"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "ruta",
+        "options": {
+          "outputFormat": "separateItems"
+        }
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "43d43163-16da-47b3-9d4c-67adf2be03ad",
+      "name": "Summarize_Resumen_por_ruta"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "be778ab7-434a-42ba-89c5-e449ebfd3d2e",
+              "name": "lista",
+              "value": "={{ $json.ruta +\n': ' +\n$json.cantidad +\n' solicitudes | monto total: $' +\n$json.monto_ruta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1024,
+        -96
+      ],
+      "id": "b21259c3-b1f1-4044-942d-10f73a55f2a9",
+      "name": "Edit Fields_Línea_por_ruta"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "linea",
+              "separateBy": "\n"
+            },
+            {
+              "aggregation": "sum",
+              "field": "cantidad"
+            },
+            {
+              "aggregation": "sum",
+              "field": "monto_ruta"
+            },
+            {
+              "aggregation": "sum",
+              "field": "aprobaciones_ruta"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        -96
+      ],
+      "id": "a42cf7d7-5667-4f1c-9298-08e401820da3",
+      "name": "Summarize_Consolidado_final"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3162d9f5-27a1-422e-a8b2-4f5ac67e1365",
+              "name": "tasa_aprobacion",
+              "value": "={{ $json.ruta + ': ' + $json.cantidad + ' solicitudes | monto total: $' + $json.monto_ruta }}",
+              "type": "number"
+            },
+            {
+              "id": "09800bee-5b0d-443d-9dc1-29cc6d16465e",
+              "name": "mensaje",
+              "value": "={{ 'Resumen diario de devoluciones - ' + $now.toFormat('dd-LL-yyyy') + '\\n\\n' + $json.detalle_rutas + '\\n\\nTotal solicitudes: ' + $json.total_solicitudes + '\\nMonto total del día: $' + $json.monto_total_dia + '\\nTasa de aprobación automática: ' + (($json.aprobaciones / $json.total_solicitudes) * 100).toFixed(2) + '%' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1472,
+        -96
+      ],
+      "id": "0c48c514-b3be-4cf8-bc50-031e0f1f3ec0",
+      "name": "Edit Fields_Mensaje_resumen_diario"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "02e8f6a1-6e3e-4cf9-b19f-1a3efe0921e6",
+              "name": "mensaje",
+              "value": "={{ 'Resumen diario de devoluciones - ' + $now.toFormat('dd-LL-yyyy') + '\\n\\nNo se recibieron solicitudes durante el día.' + '\\nTotal solicitudes: 0' + '\\nMonto total del día: $0' + '\\nTasa de aprobación automática: 0%' }}",
+              "type": "string"
+            },
+            {
+              "id": "543b1831-dbb6-45c1-ac96-d5f819b918fe",
+              "name": "total_solicitudes",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "663fbde0-d0cf-430a-be17-f9ceaf6eafb9",
+              "name": "monto_total_dia",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "79ff4a79-2230-464b-9832-e311fcb69803",
+              "name": "tasa_aprobacion",
+              "value": 0,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        672,
+        80
+      ],
+      "id": "aff5624a-dcad-4b5a-bd75-aae4608a9c02",
+      "name": "Edit Fields_Día_sin_solicitudes"
+    },
+    {
+      "parameters": {
+        "sendTo": "thannia.contreras@gmail.com",
+        "subject": "Resumen diario de devoluciones",
+        "message": "={{ $json.mensaje }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1664,
+        16
+      ],
+      "id": "c336399f-14d0-411e-b042-9c7c99f2d5e3",
+      "name": "Send a message",
+      "webhookId": "f00619ea-e546-4219-88b2-343f0922bc9d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TObU9c3OdfkWMk9B",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "Leer_solicitudes_de_hoy": {
+      "main": [
+        [
+          {
+            "node": "If_hay_solicitudes?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If_hay_solicitudes?": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields_Preparar_resumen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields_Día_sin_solicitudes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields_Preparar_resumen": {
+      "main": [
+        [
+          {
+            "node": "Summarize_Resumen_por_ruta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize_Resumen_por_ruta": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields_Línea_por_ruta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields_Línea_por_ruta": {
+      "main": [
+        [
+          {
+            "node": "Summarize_Consolidado_final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize_Consolidado_final": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields_Mensaje_resumen_diario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields_Mensaje_resumen_diario": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields_Día_sin_solicitudes": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "h6OycOoEgUHGG026"
+  },
+  "versionId": "6be56697-0ae5-4207-a686-849d492c97d6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "65161f3602f8fb48100059aaf5a01503a889158d67103a4586db03d4905dbcd7"
+  },
+  "nodeGroups": [],
+  "id": "sJ4HLwzdTWKQsF2W",
+  "tags": []
+}
