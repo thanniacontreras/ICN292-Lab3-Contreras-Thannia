@@ -1,12 +1,12 @@
 # ICN292-Lab3-Contreras-Thannia
 ## Datos del estudiante
-Nombre: Thannia Contreras Bastidas
-Rut: 21444986
-Semilla: 986
-Fecha: 22/09/2026
+*Nombre:* Thannia Contreras Bastidas
+*Rut:* 21444986
+*Semilla:* 986
+*Fecha:* 22/09/2026
 ## Descripción del proyecto
 Este repositorio contiene los archivos desarrollados para el laboratorio 3 de ICN 292. El proyecto automatiza la recepción, evaluación, registro y notificación de solicitudes de devolución mediante workflows creados de n8n.
-El sistema clasifica las solicitudes de acuerdo con las reglas definidas en el laboratorio, registra sus resultados y envía las notificaciones correspondientes.
+*El sistema clasifica las solicitudes de acuerdo con las reglas definidas en el laboratorio, registra sus resultados y envía las notificaciones correspondientes.*
 ## Archivos
 - ICN292-Lab3-Contreras-Thannia-triage.json: recibe, valida, clasifica, registra y responde cada solicitud.
 - ICN292-Lab3-Contreras-Thannia-emisor.json: envía las 15 solicitudes de prueba al webhook productivo.
