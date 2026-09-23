@@ -3,7 +3,7 @@
 - Nombre: Thannia Contreras Bastidas
 - Rut: 21444986
 - Semilla: 986
-- Fecha:* 22/09/2026
+- Fecha: 22/09/2026
 ## Descripción del proyecto
 Este repositorio contiene los archivos desarrollados para el laboratorio 3 de ICN 292. El proyecto automatiza la recepción, evaluación, registro y notificación de solicitudes de devolución mediante workflows creados de n8n.
 El sistema clasifica las solicitudes de acuerdo con las reglas definidas en el laboratorio, registra sus resultados y envía las notificaciones correspondientes.
